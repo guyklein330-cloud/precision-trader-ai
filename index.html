@@ -1,1 +1,74 @@
+<escape><!DOCTYPE html>
 
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Precision Trader AI</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#080d18;color:#f1f5f9;font-family:Arial,sans-serif}
+header{padding:22px 16px;text-align:center;background:#101a2d;border-bottom:1px solid #263550}
+h1{color:#49e0c1;margin:5px 0}
+header p{color:#aab8ce}
+main{max-width:700px;margin:25px auto;padding:16px}
+.card{background:#111c30;border:1px solid #2a3b58;border-radius:14px;padding:20px;margin-bottom:18px}
+label{display:block;margin:15px 0 8px;color:#b9c8dc}
+select,input,textarea{width:100%;padding:13px;border-radius:8px;border:1px solid #394b68;background:#091222;color:white}
+button{width:100%;padding:14px;border:0;border-radius:8px;background:#49e0c1;color:#06131b;font-weight:bold;font-size:16px;margin-top:18px}
+#result{white-space:pre-wrap;line-height:1.7;color:#d9e5f5}
+.small{font-size:12px;color:#9aaac0;line-height:1.6}
+</style>
+</head>
+<body>
+<header>
+<h1>PRECISION TRADER AI</h1>
+<p>SMC + CRT Market Analysis</p>
+</header>
+<main>
+<div class="card">
+<h2>Analyze your market</h2>
+<label>Choose market</label>
+<select id="market">
+<option>XAUUSD (Gold)</option>
+<option>Synthetic Indices</option>
+</select>
+<label>Trading timeframe</label>
+<select id="timeframe">
+<option>1 minute</option><option>5 minutes</option>
+<option>15 minutes</option><option>1 hour</option>
+<option>4 hours</option>
+</select>
+<label>Upload chart screenshot</label>
+<input id="chart" type="file" accept="image/*">
+<label>Current price (optional)</label>
+<input id="price" type="number" step="any" placeholder="Enter current market price">
+<label>Market observations (optional)</label>
+<textarea id="notes" rows="3" placeholder="Describe market structure, liquidity, FVG, CRT candle..."></textarea>
+<button onclick="analyze()">Analyze chart</button>
+</div>
+<div class="card">
+<h2>Analysis result</h2>
+<div id="result">Upload your chart and select Analyze chart to begin.</div>
+</div>
+<p class="small">Educational tool only. Analysis is not a guarantee of profit. Always manage risk and verify market conditions.</p>
+</main>
+<script>
+function analyze(){
+const market=document.getElementById('market').value;
+const timeframe=document.getElementById('timeframe').value;
+const price=document.getElementById('price').value;
+const notes=document.getElementById('notes').value;
+const chart=document.getElementById('chart').files[0];
+let message="Market: "+market+"\nTimeframe: "+timeframe+"\n";
+if(price) message+="Current price: "+price+"\n";
+message+="\nStatus: WAIT — confirmation needed.\n\n";
+message+="Entry: Not determined\nStop loss: Not determined\nTake profit: Not determined\nConfidence: Not calculated\n\n";
+if(chart) message+="Chart uploaded: "+chart.name+"\n";
+if(notes) message+="Your observations: "+notes+"\n";
+message+="\nThis is currently the website interface, not a connected AI analysis engine. No live market data or actual AI analysis has been performed. The next step is connecting an analysis backend.";
+document.getElementById('result').textContent=message;
+}
+</script>
+</body>
+</html></escape>
