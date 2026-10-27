@@ -118,6 +118,13 @@ IMPORTANT RULES:
 `;
     
     const result = await ai.models.generateContent({
+    
+let result;
+let lastError;
+
+for (let attempt = 0; attempt < 3; attempt++) {
+  try {
+    result = await ai.models.generateContent({
       model: "gemini-3.8-flash",
       contents: [
         {
@@ -129,6 +136,33 @@ IMPORTANT RULES:
         prompt
       ]
     });
+
+    break;
+  } catch (error) {
+    lastError = error;
+
+    const message = String(error.message || error);
+    const retryable =
+      /503|UNAVAILABLE|429|RESOURCE_EXHAUSTED|500|INTERNAL|502|504|overloaded/i
+        .test(message);
+
+    if (!retryable || attempt === 2) {
+      throw error;
+    }
+
+    const delay = 1500 * Math.pow(2, attempt);
+    console.log(
+      `Gemini attempt ${attempt + 1} failed. Retrying in ${delay}ms.`
+    );
+
+    await new Promise(resolve => setTimeout(resolve, delay));
+  }
+}
+
+if (!result) {
+  throw lastError || new Error("Gemini did not return a result.");
+}
+
 
     return res.json({
       success: true,
