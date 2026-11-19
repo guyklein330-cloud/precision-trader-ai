@@ -119,7 +119,12 @@ Never guarantee profits.
 
     const ai = new GoogleGenAI({ apiKey });
 
-    const result = await ai.models.generateContent({
+    let result;
+let lastError;
+
+for (let attempt = 0; attempt < 3; attempt++) {
+  try {
+    result = await ai.models.generateContent({
       model: "gemini-3.8-flash",
       contents: [
         {
@@ -136,6 +141,25 @@ Never guarantee profits.
         }
       ]
     });
+
+    break;
+  } catch (error) {
+    lastError = error;
+    const message = String(error.message || error);
+
+    if (!/503|UNAVAILABLE|429|RESOURCE_EXHAUSTED|500|502|504/i.test(message)) {
+      throw error;
+    }
+
+    if (attempt === 2) throw error;
+
+    const delay = 2000 * Math.pow(2, attempt);
+    console.log(`Gemini retry ${attempt + 1} in ${delay}ms`);
+    await new Promise(resolve => setTimeout(resolve, delay));
+  }
+}
+
+if (!result) throw lastError || new Error("No AI response.");
 
     return res.json({
       success: true,
