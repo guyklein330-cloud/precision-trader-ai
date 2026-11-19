@@ -14,12 +14,7 @@ const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 8 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
-    const allowed = [
-      "image/jpeg",
-      "image/png",
-      "image/webp"
-    ];
-
+    const allowed = ["image/jpeg", "image/png", "image/webp"];
     if (allowed.includes(file.mimetype)) {
       cb(null, true);
     } else {
@@ -31,8 +26,15 @@ const upload = multer({
 app.get("/", (req, res) => {
   res.json({
     status: "online",
-    service: "Precision Trader AI",
+    service: "GUYPREDICTION AI",
     message: "AI analysis backend is running."
+  });
+});
+
+app.get("/api/health", (req, res) => {
+  res.json({
+    status: "ok",
+    apiKeyConfigured: Boolean(process.env.GEMINI_API_KEY)
   });
 });
 
@@ -42,7 +44,7 @@ app.post("/api/analyze", upload.single("chart"), async (req, res) => {
 
     if (!apiKey) {
       return res.status(500).json({
-        error: "Server API key is not configured."
+        error: "GEMINI_API_KEY is missing in Render environment variables."
       });
     }
 
@@ -52,139 +54,112 @@ app.post("/api/analyze", upload.single("chart"), async (req, res) => {
       });
     }
 
-    const market = String(req.body.market || "XAUUSD").slice(0, 50);
-    const timeframe = String(req.body.timeframe || "Unknown").slice(0, 30);
+    const market = String(req.body.market || "XAUUSD");
+    const timeframe = String(req.body.timeframe || "Unknown");
+    const notes = String(req.body.notes || "");
 
-    const ai = new GoogleGenAI({ apiKey });
-
-    
-const prompt = `
-You are Precision Trader AI, a clear and practical trading chart assistant.
-
-Analyze the uploaded chart using Smart Money Concepts (SMC) and Candle Range Theory (CRT). Explain everything in simple English.
+    const prompt = `
+You are GUYPREDICTION AI, a professional trading chart analyst.
 
 Market: ${market}
 Timeframe: ${timeframe}
+User notes: ${notes}
+
+Analyze the uploaded chart using:
+- Smart Money Concepts (SMC)
+- ICT concepts
+- Candle Range Theory (CRT)
+- Market structure
+- BOS and CHoCH
+- Liquidity sweeps
+- Fair Value Gaps
+- Support and resistance
 
 Use this exact response format:
 
-DECISION: BUY, SELL, or WAIT
+DECISION: BUY / SELL / WAIT
 
-CURRENT SITUATION:
-Explain the current market direction briefly.
+MARKET BIAS:
+Explain bullish, bearish or neutral direction.
 
-PRICE TO WATCH:
-Give the exact price level visible on the chart. Never invent a price.
+MARKET STRUCTURE:
+Explain BOS or CHoCH if visible.
 
-BUY PLAN:
-Watch price at: [price or Not identifiable]
-Condition: Explain what bullish confirmation is needed.
-Entry: [price or Not identifiable]
-Stop Loss: [price or Not identifiable]
-Take Profit 1: [price or Not identifiable]
-Take Profit 2: [price or Not identifiable]
+LIQUIDITY:
+Identify liquidity sweeps if visible.
 
-SELL PLAN:
-Watch price at: [price or Not identifiable]
-Condition: Explain what bearish confirmation is needed.
-Entry: [price or Not identifiable]
-Stop Loss: [price or Not identifiable]
-Take Profit 1: [price or Not identifiable]
-Take Profit 2: [price or Not identifiable]
+FVG:
+Identify imbalance if visible.
+
+CRT:
+Identify the range high and low if possible.
+
+ENTRY ZONE:
+STOP LOSS:
+TAKE PROFIT 1:
+TAKE PROFIT 2:
+RISK TO REWARD:
 
 CONFIDENCE:
-Give an estimated confidence percentage from 0% to 100%, based on visible evidence. This is a subjective estimate, not a measured probability.
+Give a subjective estimate from 0% to 100%.
+This is not a measured probability.
 
 WHAT TO DO NOW:
-Give one clear instruction:
-- WAIT for a specific price or confirmation.
-- Consider BUY only after the stated bullish confirmation.
-- Consider SELL only after the stated bearish confirmation.
+Give one clear trading instruction.
 
-WHY:
-Explain the main reason in no more than 3 short sentences.
+REASONING:
+Explain the decision.
 
-IMPORTANT RULES:
-- Analyze only information visible in the screenshot.
-- Never invent prices, candles, or live market data.
-- Do not assume the current price if it is not visible.
-- Do not recommend entering just because price reaches a level.
-- Require suitable confirmation before suggesting an entry.
-- If the chart is unclear or evidence conflicts, choose WAIT.
-- If an entry, stop loss, or target cannot be identified reliably, say "Not identifiable."
-- Keep the response short, clear, and easy for a beginner.
-- Never guarantee profits.
-- This is educational analysis, not financial advice.
+IMPORTANT:
+Never invent prices or claim access to live market data.
+Only use information visible in the screenshot.
+If the chart is unclear, choose WAIT.
+Never guarantee profits.
 `;
-    
-    const result = await ai.models.generateContent({
-    
-let result;
-let lastError;
 
-for (let attempt = 0; attempt < 3; attempt++) {
-  try {
-    result = await ai.models.generateContent({
-      model: "gemini-3.8-flash",
+    const ai = new GoogleGenAI({ apiKey });
+
+    const result = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
       contents: [
         {
-          inlineData: {
-            mimeType: req.file.mimetype,
-            data: req.file.buffer.toString("base64")
-          }
-        },
-        prompt
+          role: "user",
+          parts: [
+            { text: prompt },
+            {
+              inlineData: {
+                mimeType: req.file.mimetype,
+                data: req.file.buffer.toString("base64")
+              }
+            }
+          ]
+        }
       ]
     });
-
-    break;
-  } catch (error) {
-    lastError = error;
-
-    const message = String(error.message || error);
-    const retryable =
-      /503|UNAVAILABLE|429|RESOURCE_EXHAUSTED|500|INTERNAL|502|504|overloaded/i
-        .test(message);
-
-    if (!retryable || attempt === 2) {
-      throw error;
-    }
-
-    const delay = 1500 * Math.pow(2, attempt);
-    console.log(
-      `Gemini attempt ${attempt + 1} failed. Retrying in ${delay}ms.`
-    );
-
-    await new Promise(resolve => setTimeout(resolve, delay));
-  }
-}
-
-if (!result) {
-  throw lastError || new Error("Gemini did not return a result.");
-}
-
 
     return res.json({
       success: true,
       market,
       timeframe,
-      analysis: result.text || "No analysis was returned."
+      analysis: result.text || "No analysis returned."
     });
+
   } catch (error) {
-    console.error("Analysis error:", error.message);
+    console.error("Analysis error:", error);
 
     return res.status(500).json({
-      error: "Analysis failed. Check the server logs and API configuration."
+      error: "AI analysis failed: " + String(error.message || error).slice(0, 400)
     });
   }
 });
 
 app.use((error, req, res, next) => {
+  console.error("Request error:", error);
   res.status(400).json({
     error: error.message || "Invalid request."
   });
 });
 
 app.listen(port, "0.0.0.0", () => {
-  console.log(`Precision Trader AI running on port ${port}`);
+  console.log("GUYPREDICTION AI backend running on port " + port);
 });
