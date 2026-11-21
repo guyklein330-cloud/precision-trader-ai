@@ -5,6 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>GUYPREDICTION AI</title>
+
 <style>
 :root{
 --bg:#080d16;--panel:#101827;--line:#26344a;
@@ -13,28 +14,22 @@
 --red:#ff6477;--gold:#f3c969;
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);
-font-family:Arial,sans-serif}
-header{position:sticky;top:0;z-index:5;background:#0b1220;
-border-bottom:1px solid var(--line);padding:17px 20px;
-display:flex;justify-content:space-between;align-items:center}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,sans-serif}
+header{position:sticky;top:0;z-index:5;background:#0b1220;border-bottom:1px solid var(--line);padding:17px 20px;display:flex;justify-content:space-between;align-items:center}
 .brand{font-size:20px;font-weight:800}
 .brand span{color:var(--teal)}
 .status{font-size:12px;color:var(--green)}
 main{max-width:1150px;margin:auto;padding:16px}
-.panel{background:var(--panel);border:1px solid var(--line);
-border-radius:12px;padding:17px;margin-bottom:15px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:17px;margin-bottom:15px}
 h2{font-size:17px;margin:0 0 15px}
 .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
 label{display:block;color:var(--muted);font-size:12px;margin-bottom:7px}
 select,button{width:100%;padding:12px;border-radius:8px}
 select{background:#080f1c;color:white;border:1px solid var(--line)}
-button{background:var(--teal);color:#07131b;font-weight:bold;
-border:0;cursor:pointer}
+button{background:var(--teal);color:#07131b;font-weight:bold;border:0;cursor:pointer}
 button:disabled{opacity:.5}
 .metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.metric{background:#080f1c;border:1px solid var(--line);
-padding:13px;border-radius:9px;min-width:0}
+.metric{background:#080f1c;border:1px solid var(--line);padding:13px;border-radius:9px;min-width:0}
 .metric small{display:block;color:var(--muted);margin-bottom:9px}
 .metric strong{font-size:18px;overflow-wrap:anywhere}
 .green{color:var(--green)}
@@ -42,21 +37,18 @@ padding:13px;border-radius:9px;min-width:0}
 .gold{color:var(--gold)}
 .muted{color:var(--muted);font-size:12px}
 .chart{height:390px;width:100%;border:0;border-radius:8px}
-.row{display:flex;justify-content:space-between;gap:10px;
-align-items:center;padding:11px 0;border-bottom:1px solid var(--line)}
-.result{white-space:pre-wrap;overflow-wrap:anywhere;
-background:#080f1c;border:1px solid var(--line);
-border-radius:8px;padding:13px;line-height:1.6}
-button.secondary{background:#26354b;color:white;margin-top:10px}
-button.alert{background:#26354b;color:white}
-.badge{padding:5px 9px;border-radius:5px;background:#17253a;
-font-size:11px}
+.row{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line)}
+.result{white-space:pre-wrap;overflow-wrap:anywhere;background:#080f1c;border:1px solid var(--line);border-radius:8px;padding:13px;line-height:1.6}
+button.secondary,button.alert{background:#26354b;color:white;margin-top:10px}
 .timeframes{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
-.tf{background:#080f1c;padding:12px;border-radius:8px;
-border:1px solid var(--line)}
+.tf{background:#080f1c;padding:12px;border-radius:8px;border:1px solid var(--line)}
 .tf strong{display:block;margin-top:8px}
 .event{padding:12px 0;border-bottom:1px solid var(--line)}
 .hidden{display:none}
+.news-box{background:#080f1c;border:1px solid var(--line);padding:15px;border-radius:9px;margin-top:12px}
+.countdown{font-size:30px;font-weight:800;color:var(--gold);margin:12px 0}
+.news-event{font-size:17px;font-weight:bold;color:var(--teal)}
+.news-state{font-size:13px;margin-top:8px}
 @media(max-width:600px){
 main{padding:10px}
 .grid{grid-template-columns:1fr}
@@ -68,6 +60,7 @@ header{padding:14px}
 </head>
 
 <body>
+
 <header>
 <div class="brand">GUY<span>PREDICTION</span> AI</div>
 <div class="status" id="connection">● CONNECTING</div>
@@ -77,6 +70,7 @@ header{padding:14px}
 
 <section class="panel">
 <h2>Live market scanner</h2>
+
 <div class="grid">
 <div>
 <label>MARKET TYPE</label>
@@ -96,6 +90,7 @@ header{padding:14px}
 </select>
 </div>
 </div>
+
 <div class="metrics" style="margin-top:14px">
 <div class="metric">
 <small>MARKET PRICE</small>
@@ -110,6 +105,7 @@ header{padding:14px}
 <strong id="provider">—</strong>
 </div>
 </div>
+
 <p class="muted" id="updated">Waiting for market data...</p>
 </section>
 
@@ -118,13 +114,12 @@ header{padding:14px}
 <iframe id="chart" class="chart"
 src="https://www.tradingview.com/widgetembed/?symbol=OANDA%3AXAUUSD&interval=15&theme=dark&style=1&timezone=Etc%2FUTC&withdateranges=1&hideideas=1"
 allowfullscreen></iframe>
-<p class="muted" id="chartNote">
-TradingView chart. Market analysis uses backend candle data.
-</p>
+<p class="muted" id="chartNote">TradingView chart. Market analysis uses backend candle data.</p>
 </section>
 
 <section class="panel">
 <h2>Automatic multi-timeframe analysis</h2>
+
 <div class="timeframes">
 <div class="tf">
 <span class="muted">H4 TREND</span>
@@ -139,12 +134,73 @@ TradingView chart. Market analysis uses backend candle data.
 <strong id="m15">Waiting</strong>
 </div>
 </div>
+
 <button id="scan" style="margin-top:15px">SCAN MARKET NOW</button>
-<p class="muted" id="scanStatus">Automatic scan every 5 minutes while this page is open.</p>
+<p class="muted" id="scanStatus">Automatic market scan every 5 minutes.</p>
+</section>
+
+<!-- PRE-NEWS SCANNER -->
+
+<section class="panel">
+<h2>GUYPREDICTION AI — Pre-news scanner</h2>
+
+<div class="metrics">
+<div class="metric">
+<small>NEWS SCANNER</small>
+<strong id="newsStatus" class="gold">WAITING</strong>
+</div>
+
+<div class="metric">
+<small>NEXT NEWS</small>
+<strong id="nextNews">Searching...</strong>
+</div>
+
+<div class="metric">
+<small>TIME REMAINING</small>
+<strong id="newsCountdown">--:--</strong>
+</div>
+</div>
+
+<div class="news-box">
+<div class="muted">SELECTED HIGH-IMPACT NEWS</div>
+<div class="news-event" id="newsEvent">Waiting for economic calendar...</div>
+<div class="countdown" id="bigCountdown">--:--</div>
+<div class="news-state" id="newsMessage">
+The scanner will automatically start 30 minutes before a selected news release.
+</div>
+</div>
+
+<div class="row">
+<span class="muted">Automatic scan interval</span>
+<strong>2 minutes</strong>
+</div>
+
+<div class="row">
+<span class="muted">Scanner starts</span>
+<strong>30 minutes before news</strong>
+</div>
+
+<div class="row">
+<span class="muted">Last permitted scan</span>
+<strong>10 seconds before release</strong>
+</div>
+
+<div class="row">
+<span class="muted">Timezone</span>
+<strong>Africa/Bujumbura (UTC+2)</strong>
+</div>
+
+<p class="muted">
+Only NFP, FOMC, CPI and PPI events are monitored.
+The scanner uses the selected market's H4, H1 and M15 data.
+</p>
+
+<button class="secondary" id="refreshNews">REFRESH NEWS SCANNER</button>
 </section>
 
 <section class="panel">
 <h2>GUYPREDICTION trading signal</h2>
+
 <div class="metrics">
 <div class="metric">
 <small>DIRECTION</small>
@@ -175,21 +231,23 @@ TradingView chart. Market analysis uses backend candle data.
 <strong id="tp2">—</strong>
 </div>
 </div>
+
 <div class="result" id="reasoning" style="margin-top:13px">
 Waiting for the first market scan.
 </div>
+
 <p class="muted" id="signalTime"></p>
 </section>
 
 <section class="panel">
-<h2>Economic calendar</h2>
-<div id="calendar" class="muted">Loading high-impact economic events...</div>
+<h2>Economic calendar — Selected news only</h2>
+<div id="calendar" class="muted">Loading economic events...</div>
 <button class="secondary" id="refreshCalendar">REFRESH NEWS</button>
 </section>
 
 <section class="panel">
 <h2>Notifications</h2>
-<p class="muted">Receive signal alerts and high-impact economic news notifications while the dashboard is open.</p>
+<p class="muted">Receive signal alerts and selected economic news notifications while the dashboard is open.</p>
 <button id="enableNotifications">ENABLE NOTIFICATIONS</button>
 <p class="muted" id="notificationStatus">Notifications not enabled.</p>
 </section>
@@ -214,8 +272,14 @@ const $=id=>document.getElementById(id);
 
 let derivSymbols=[];
 let lastSignal="";
-let notifiedEvents=new Set();
 let busy=false;
+let selectedEvents=[];
+let lastNewsScanAt={};
+let notifiedEvents=new Set();
+
+const NEWS_START_MINUTES=30;
+const NEWS_STOP_SECONDS=10;
+const NEWS_SCAN_INTERVAL=2*60*1000;
 
 const intervals=[
 {key:"4h",name:"H4",seconds:14400},
@@ -243,12 +307,21 @@ $("connection").style.color=color||"var(--green)";
 async function getJSON(url){
 const controller=new AbortController();
 const timer=setTimeout(()=>controller.abort(),15000);
+
 try{
-const r=await fetch(url,{signal:controller.signal,cache:"no-store"});
+const r=await fetch(url,{
+signal:controller.signal,
+cache:"no-store"
+});
+
 const data=await r.json();
+
 if(!r.ok)throw new Error(data.error||"HTTP "+r.status);
+
 return data;
-}finally{clearTimeout(timer);}
+}finally{
+clearTimeout(timer);
+}
 }
 
 function selectedSymbol(){
@@ -261,6 +334,7 @@ return $("marketType").value==="deriv";
 
 function formatPrice(n){
 if(!Number.isFinite(Number(n)))return "—";
+
 return Number(n).toLocaleString("en-US",{
 maximumFractionDigits:8
 });
@@ -268,6 +342,7 @@ maximumFractionDigits:8
 
 function normalizeCandles(data){
 let list=data.bars||data.candles||data.data||data.history?.candles||[];
+
 if(!Array.isArray(list))return [];
 
 return list.map(c=>({
@@ -286,48 +361,64 @@ Number.isFinite(c.close)
 
 function getPrice(data){
 const keys=["price","last","lastPrice","close","rate","quote","mid","bid"];
+
 for(const key of keys){
-if(data[key]!==undefined&&Number.isFinite(Number(data[key])))
+if(data[key]!==undefined&&Number.isFinite(Number(data[key]))){
 return Number(data[key]);
 }
+}
+
 if(data.data&&typeof data.data==="object")return getPrice(data.data);
 if(data.quote&&typeof data.quote==="object")return getPrice(data.quote);
+
 return null;
 }
 
 function ema(values,period){
 if(values.length<period)return null;
+
 let result=values.slice(0,period).reduce((a,b)=>a+b,0)/period;
 const k=2/(period+1);
+
 for(let i=period;i<values.length;i++){
 result=values[i]*k+result*(1-k);
 }
+
 return result;
 }
 
 function rsi(values,period=14){
 if(values.length<=period)return 50;
+
 let gains=0,losses=0;
+
 for(let i=values.length-period;i<values.length;i++){
 const d=values[i]-values[i-1];
+
 if(d>0)gains+=d;
 else losses-=d;
 }
+
 if(losses===0)return 100;
+
 return 100-(100/(1+gains/losses));
 }
 
 function atr(candles,period=14){
 if(candles.length<period+1)return null;
+
 let sum=0;
+
 for(let i=candles.length-period;i<candles.length;i++){
 const c=candles[i],p=candles[i-1];
+
 sum+=Math.max(
 c.high-c.low,
 Math.abs(c.high-p.close),
 Math.abs(c.low-p.close)
 );
 }
+
 return sum/period;
 }
 
@@ -343,12 +434,17 @@ const strength=rsi(closes);
 const volatility=atr(candles);
 
 let trend="WAIT";
+
 if(e20>e50&&last>e20)trend="BULLISH";
 if(e20<e50&&last<e20)trend="BEARISH";
 
 return {
-trend,price:last,ema20:e20,ema50:e50,
-rsi:strength,atr:volatility,
+trend,
+price:last,
+ema20:e20,
+ema50:e50,
+rsi:strength,
+atr:volatility,
 momentum:last>previous?"UP":"DOWN"
 };
 }
@@ -356,6 +452,7 @@ momentum:last>previous?"UP":"DOWN"
 async function loadDerivSymbols(){
 const data=await getJSON(API+"/api/deriv/symbols");
 derivSymbols=data.symbols||[];
+
 const select=$("symbol");
 select.innerHTML="";
 
@@ -366,17 +463,23 @@ o.textContent=item.name+" ("+item.symbol+")";
 select.appendChild(o);
 });
 
-if(!derivSymbols.length)throw new Error("No synthetic indices returned.");
+if(!derivSymbols.length){
+throw new Error("No synthetic indices returned.");
+}
 }
 
 function updateChart(){
 if(isDeriv()){
 $("chart").classList.add("hidden");
+
 $("chartNote").textContent=
 "Deriv synthetic market. Live candles are analyzed directly from Deriv.";
+
 return;
 }
+
 $("chart").classList.remove("hidden");
+
 const map={
 XAUUSD:"OANDA:XAUUSD",
 EURUSD:"OANDA:EURUSD",
@@ -388,7 +491,9 @@ USDCHF:"OANDA:USDCHF",
 NZDUSD:"OANDA:NZDUSD",
 BTCUSD:"COINBASE:BTCUSD"
 };
+
 const symbol=map[selectedSymbol()]||"OANDA:XAUUSD";
+
 $("chart").src=
 "https://www.tradingview.com/widgetembed/?symbol="+
 encodeURIComponent(symbol)+
@@ -397,6 +502,7 @@ encodeURIComponent(symbol)+
 
 async function loadQuote(){
 const symbol=encodeURIComponent(selectedSymbol());
+
 const url=isDeriv()
 ?API+"/api/deriv/quote?symbol="+symbol
 :API+"/api/market/quote?symbol="+symbol;
@@ -404,16 +510,21 @@ const url=isDeriv()
 const data=await getJSON(url);
 const price=getPrice(data);
 
-if(price===null)throw new Error("Price field not found in provider response.");
+if(price===null){
+throw new Error("Price field not found in provider response.");
+}
 
 $("price").textContent=formatPrice(price);
-$("provider").textContent=data.provider|| (isDeriv()?"Deriv":"Market provider");
+$("provider").textContent=data.provider||(isDeriv()?"Deriv":"Market provider");
+
 $("marketStatus").textContent=
 data.live===true?"LIVE":
 data.stale||data.marketState==="closed"?"LAST KNOWN":"AVAILABLE";
+
 $("updated").textContent="Updated: "+
 (data.retrievedAt||data.timestamp||new Date().toLocaleString())+
 " | "+(data.priceLabel||"Market quote");
+
 return price;
 }
 
@@ -431,14 +542,17 @@ url=API+"/api/market/ohlc?symbol="+symbol+
 
 const data=await getJSON(url);
 const candles=normalizeCandles(data);
+
 if(candles.length<55){
 throw new Error(interval.name+" returned fewer than 55 candles.");
 }
+
 return analyzeCandles(candles);
 }
 
 function renderTrend(id,data){
 $(id).textContent=data.trend;
+
 $(id).className=
 data.trend==="BULLISH"?"green":
 data.trend==="BEARISH"?"red":"gold";
@@ -446,29 +560,39 @@ data.trend==="BEARISH"?"red":"gold";
 
 function saveHistory(direction,confidence){
 const history=JSON.parse(localStorage.getItem("guyHistory")||"[]");
+
 history.unshift({
 date:new Date().toLocaleString(),
 symbol:selectedSymbol(),
-direction,confidence
+direction,
+confidence
 });
+
 localStorage.setItem("guyHistory",JSON.stringify(history.slice(0,30)));
+
 showHistory();
 }
 
 function showHistory(){
 const history=JSON.parse(localStorage.getItem("guyHistory")||"[]");
+
 $("history").innerHTML="";
+
 if(!history.length){
 $("history").textContent="No signals yet.";
 return;
 }
+
 history.forEach(item=>{
 const div=document.createElement("div");
 div.className="row";
+
 const a=document.createElement("span");
 a.textContent=item.date+" | "+item.symbol;
+
 const b=document.createElement("strong");
 b.textContent=item.direction+" | "+item.confidence+"%";
+
 div.append(a,b);
 $("history").appendChild(div);
 });
@@ -485,6 +609,7 @@ const bullish=results.filter(x=>x.trend==="BULLISH").length;
 const bearish=results.filter(x=>x.trend==="BEARISH").length;
 
 let direction="WAIT";
+
 if(bullish===3)direction="BUY";
 if(bearish===3)direction="SELL";
 
@@ -493,27 +618,36 @@ const avgRsi=results.reduce((a,b)=>a+b.rsi,0)/3;
 const atrValue=results[2].atr;
 
 let confidence=45+alignment*13;
+
 if(direction==="BUY"&&avgRsi>75)confidence-=12;
 if(direction==="SELL"&&avgRsi<25)confidence-=12;
+
 confidence=Math.max(0,Math.min(90,confidence));
 
 let entry=price,sl=null,tp1=null,tp2=null,rr="—";
 
 if(direction!=="WAIT"&&atrValue){
 const distance=atrValue*1.5;
+
 sl=direction==="BUY"?entry-distance:entry+distance;
 tp1=direction==="BUY"?entry+distance:entry-distance;
 tp2=direction==="BUY"?entry+distance*2:entry-distance*2;
+
 rr="1:2";
 }
 
-return {direction,confidence,entry,sl,tp1,tp2,rr,atrValue,avgRsi};
+return {
+direction,confidence,entry,sl,tp1,tp2,rr,atrValue,avgRsi
+};
 }
 
 function displaySignal(s,results){
 $("direction").textContent=s.direction;
+
 $("direction").className=
-s.direction==="BUY"?"green":s.direction==="SELL"?"red":"gold";
+s.direction==="BUY"?"green":
+s.direction==="SELL"?"red":"gold";
+
 $("confidence").textContent=s.confidence+"%";
 $("rr").textContent=s.rr;
 $("entry").textContent=formatPrice(s.entry);
@@ -537,42 +671,74 @@ $("reasoning").textContent=
 $("signalTime").textContent="Scanned: "+new Date().toLocaleString();
 
 const key=selectedSymbol()+":"+s.direction;
+
 if(s.direction!=="WAIT"&&key!==lastSignal){
 lastSignal=key;
+
 saveHistory(s.direction,s.confidence);
+
 if(s.confidence>=80){
-notify("GUYPREDICTION AI — "+s.direction,
-selectedSymbol()+" technical score "+s.confidence+"%. Entry: "+formatPrice(s.entry));
+notify(
+"GUYPREDICTION AI — "+s.direction,
+selectedSymbol()+" technical score "+s.confidence+
+"%. Entry: "+formatPrice(s.entry)
+);
 }
 }
 }
 
-async function scanMarket(){
-if(busy)return;
+async function scanMarket(source="manual"){
+if(busy)return false;
+
+// Scheduled scans must not begin in the final 10 seconds.
+if(source==="scheduled"&&isInsideFinalNewsSeconds()){
+return false;
+}
+
 busy=true;
 $("scan").disabled=true;
 $("scan").textContent="SCANNING...";
-$("scanStatus").textContent="Loading live quote and H4, H1, M15 candles...";
+
+$("scanStatus").textContent=
+source==="news"
+?"PRE-NEWS SCAN IN PROGRESS..."
+:"Loading live quote and H4, H1, M15 candles...";
+
 try{
 const price=await loadQuote();
-const results=await Promise.all(intervals.map(loadCandles));
+
+const results=await Promise.all(
+intervals.map(loadCandles)
+);
 
 renderTrend("h4",results[0]);
 renderTrend("h1",results[1]);
 renderTrend("m15",results[2]);
 
 const signal=generateSignal(results,price);
+
 displaySignal(signal,results);
 
 setStatus("MARKET DATA CONNECTED");
+
 $("scanStatus").textContent=
-"Scan complete. Next automatic scan in 5 minutes.";
+source==="news"
+?"Pre-news scan complete. Next scan in approximately 2 minutes."
+:"Scan complete. Automatic scan every 5 minutes.";
+
+return true;
+
 }catch(error){
 setStatus("DATA ERROR","var(--red)");
+
 $("scanStatus").textContent="Scan failed: "+error.message;
+
 $("reasoning").textContent=
 "Unable to complete analysis.\n"+error.message+
 "\n\nCheck the market provider or Render logs.";
+
+return false;
+
 }finally{
 busy=false;
 $("scan").disabled=false;
@@ -580,52 +746,287 @@ $("scan").textContent="SCAN MARKET NOW";
 }
 }
 
+// -----------------------------------
+// ECONOMIC NEWS FILTER
+// -----------------------------------
+
+function classifyNews(event){
+const title=String(
+event.title||event.name||event.event||event.description||""
+).toLowerCase();
+
+if(/non.?farm|nonfarm|payroll|employment situation|\bnfp\b/.test(title)){
+return "NFP";
+}
+
+if(/fomc|federal open market|fed.*rate decision|federal funds rate/.test(title)){
+return "FOMC";
+}
+
+if(/consumer price index|\bcpi\b/.test(title)){
+return "CPI";
+}
+
+if(/producer price index|\bppi\b/.test(title)){
+return "PPI";
+}
+
+return null;
+}
+
+function getEventTimestamp(event){
+let raw=
+event.date||
+event.datetime||
+event.time||
+event.timestamp||
+event.releaseTime||
+event.release_time;
+
+if(raw===undefined||raw===null)return null;
+
+if(typeof raw==="number"||/^\d+$/.test(String(raw).trim())){
+let n=Number(raw);
+
+if(n<100000000000)n*=1000;
+
+return Number.isFinite(n)?n:null;
+}
+
+const parsed=Date.parse(raw);
+
+return Number.isFinite(parsed)?parsed:null;
+}
+
+function burundiTime(timestamp){
+return new Date(timestamp).toLocaleString("en-GB",{
+timeZone:"Africa/Bujumbura",
+dateStyle:"medium",
+timeStyle:"medium"
+});
+}
+
+function formatCountdown(milliseconds){
+if(milliseconds<0)milliseconds=0;
+
+const total=Math.floor(milliseconds/1000);
+
+const days=Math.floor(total/86400);
+const hours=Math.floor((total%86400)/3600);
+const minutes=Math.floor((total%3600)/60);
+const seconds=total%60;
+
+const pad=n=>String(n).padStart(2,"0");
+
+if(days>0){
+return days+"d "+pad(hours)+":"+pad(minutes)+":"+pad(seconds);
+}
+
+if(hours>0){
+return pad(hours)+":"+pad(minutes)+":"+pad(seconds);
+}
+
+return pad(minutes)+":"+pad(seconds);
+}
+
 function eventList(data){
 if(Array.isArray(data))return data;
 if(Array.isArray(data.events))return data.events;
 if(Array.isArray(data.data))return data.data;
 if(Array.isArray(data.events?.data))return data.events.data;
+
 return [];
 }
 
-async function loadCalendar(){
-$("calendar").textContent="Loading economic calendar...";
-try{
-const data=await getJSON(API+"/api/calendar?days=7");
-const events=eventList(data);
-$("calendar").innerHTML="";
-if(!events.length){
-$("calendar").textContent="No events returned by the provider.";
+function renderCalendar(){
+const container=$("calendar");
+container.innerHTML="";
+
+if(!selectedEvents.length){
+container.textContent=
+"No NFP, FOMC, CPI or PPI events were returned by the calendar.";
 return;
 }
-events.forEach(event=>{
-const title=event.title||event.name||event.event||"Economic event";
-const date=event.date||event.datetime||event.time||event.timestamp||"Time unavailable";
-const country=event.country||event.currency||"";
+
+selectedEvents.forEach(event=>{
 const div=document.createElement("div");
 div.className="event";
+
 const strong=document.createElement("strong");
-strong.textContent=title;
+strong.textContent=event.type+" — "+
+(event.title||event.name||event.event||"Economic event");
+
 const small=document.createElement("div");
 small.className="muted";
-small.textContent=String(date)+" | "+country+" | HIGH IMPACT";
+
+small.textContent=
+burundiTime(event.timestamp)+
+" | Burundi time (UTC+2) | "+
+(event.country||event.currency||"US");
+
 div.append(strong,small);
-$("calendar").appendChild(div);
-
-const eventKey=String(event.id||title+date);
-const eventTime=Date.parse(date);
-const twoHours=2*60*60*1000;
-
-if(Number.isFinite(eventTime)&&eventTime>Date.now()&&
-eventTime-Date.now()<=twoHours&&!notifiedEvents.has(eventKey)){
-notifiedEvents.add(eventKey);
-notify("HIGH IMPACT ECONOMIC NEWS",title+" | "+country+" | "+date);
-}
+container.appendChild(div);
 });
+}
+
+async function loadCalendar(){
+$("calendar").textContent="Loading selected economic events...";
+
+try{
+const data=await getJSON(API+"/api/calendar?days=7");
+
+const events=eventList(data);
+
+selectedEvents=events
+.map(event=>({
+...event,
+type:classifyNews(event),
+timestamp:getEventTimestamp(event)
+}))
+.filter(event=>
+event.type&&
+Number.isFinite(event.timestamp)&&
+event.timestamp>Date.now()-60*60*1000
+)
+.sort((a,b)=>a.timestamp-b.timestamp);
+
+renderCalendar();
+updateNewsScanner();
+
 }catch(error){
-$("calendar").textContent="Calendar unavailable: "+error.message;
+$("calendar").textContent=
+"Calendar unavailable: "+error.message;
+
+$("newsStatus").textContent="CALENDAR ERROR";
+$("newsMessage").textContent=
+"Could not load economic calendar. Check your backend calendar endpoint.";
 }
 }
+
+// -----------------------------------
+// AUTOMATIC PRE-NEWS SCANNER
+// -----------------------------------
+
+function isInsideFinalNewsSeconds(){
+const now=Date.now();
+
+return selectedEvents.some(event=>{
+const remaining=event.timestamp-now;
+
+return remaining>0&&remaining<=NEWS_STOP_SECONDS*1000;
+});
+}
+
+function getNextEvent(){
+const now=Date.now();
+
+return selectedEvents.find(event=>
+event.timestamp>now
+)||null;
+}
+
+function updateNewsScanner(){
+const now=Date.now();
+const next=getNextEvent();
+
+if(!next){
+$("newsStatus").textContent="WAITING";
+$("newsStatus").className="gold";
+$("nextNews").textContent="No upcoming event";
+$("newsCountdown").textContent="--:--";
+$("bigCountdown").textContent="--:--";
+$("newsEvent").textContent="Waiting for NFP, FOMC, CPI or PPI.";
+$("newsMessage").textContent=
+"Waiting for the next selected economic announcement.";
+
+return;
+}
+
+const remaining=next.timestamp-now;
+const startTime=NEWS_START_MINUTES*60*1000;
+const stopTime=NEWS_STOP_SECONDS*1000;
+
+$("nextNews").textContent=next.type;
+$("newsEvent").textContent=
+next.type+" — "+(next.title||next.name||next.event||"Economic event");
+
+$("newsCountdown").textContent=formatCountdown(remaining);
+$("bigCountdown").textContent=formatCountdown(remaining);
+
+if(remaining>startTime){
+$("newsStatus").textContent="WAITING";
+$("newsStatus").className="gold";
+
+$("newsMessage").textContent=
+"Pre-news scanner starts in "+
+formatCountdown(remaining-startTime)+
+". Scheduled release: "+burundiTime(next.timestamp);
+
+return;
+}
+
+if(remaining>stopTime){
+$("newsStatus").textContent="SCANNER ACTIVE";
+$("newsStatus").className="green";
+
+$("newsMessage").textContent=
+"Pre-news scanning window is ACTIVE. Automatic market scans run every 2 minutes. Last permitted scan is 10 seconds before release.";
+
+return;
+}
+
+if(remaining>0){
+$("newsStatus").textContent="FINAL 10 SECONDS";
+$("newsStatus").className="red";
+
+$("newsMessage").textContent=
+"New automatic scans are stopped. Waiting for the news release.";
+
+return;
+}
+}
+
+async function tickNewsScanner(){
+const now=Date.now();
+
+updateNewsScanner();
+
+const next=getNextEvent();
+
+if(!next)return;
+
+const remaining=next.timestamp-now;
+const startTime=NEWS_START_MINUTES*60*1000;
+const stopTime=NEWS_STOP_SECONDS*1000;
+
+if(remaining>startTime||remaining<=stopTime)return;
+
+const eventKey=next.type+":"+next.timestamp;
+
+const lastScan=lastNewsScanAt[eventKey]||0;
+
+if(now-lastScan<NEWS_SCAN_INTERVAL)return;
+
+if(busy)return;
+
+// Record scan time before starting to prevent duplicate scans.
+lastNewsScanAt[eventKey]=now;
+
+$("newsMessage").textContent=
+"Automatic pre-news analysis is running for "+
+next.type+". Release time: "+burundiTime(next.timestamp);
+
+notify(
+"GUYPREDICTION AI — "+next.type,
+"Pre-news scanning is active. Release in "+formatCountdown(remaining)
+);
+
+await scanMarket("news");
+}
+
+// -----------------------------------
+// EVENT HANDLERS
+// -----------------------------------
 
 $("marketType").addEventListener("change",async()=>{
 try{
@@ -633,16 +1034,21 @@ if(isDeriv()){
 await loadDerivSymbols();
 }else{
 $("symbol").innerHTML="";
+
 forexSymbols.forEach(item=>{
 const option=document.createElement("option");
 option.value=item[0];
 option.textContent=item[1];
+
 $("symbol").appendChild(option);
 });
 }
+
 lastSignal="";
 updateChart();
+
 await scanMarket();
+
 }catch(error){
 $("scanStatus").textContent=error.message;
 }
@@ -654,17 +1060,26 @@ updateChart();
 scanMarket();
 });
 
-$("scan").addEventListener("click",scanMarket);
+$("scan").addEventListener("click",()=>{
+scanMarket("manual");
+});
+
 $("refreshCalendar").addEventListener("click",loadCalendar);
+$("refreshNews").addEventListener("click",loadCalendar);
 
 $("enableNotifications").addEventListener("click",async()=>{
 if(!("Notification" in window)){
-$("notificationStatus").textContent="Browser notifications are not supported.";
+$("notificationStatus").textContent=
+"Browser notifications are not supported.";
 return;
 }
+
 const permission=await Notification.requestPermission();
+
 $("notificationStatus").textContent=
-permission==="granted"?"Notifications enabled.":"Notification permission not granted.";
+permission==="granted"
+?"Notifications enabled."
+:"Notification permission not granted.";
 });
 
 $("clearHistory").addEventListener("click",()=>{
@@ -672,21 +1087,43 @@ localStorage.removeItem("guyHistory");
 showHistory();
 });
 
+// -----------------------------------
+// START DASHBOARD
+// -----------------------------------
+
 async function start(){
 showHistory();
+
 try{
 const health=await getJSON(API+"/api/health");
-setStatus(health.status==="ok"?"BACKEND ONLINE":"BACKEND ERROR");
+
+setStatus(
+health.status==="ok"?"BACKEND ONLINE":"BACKEND ERROR"
+);
+
 }catch(error){
 setStatus("BACKEND OFFLINE","var(--red)");
 }
-await scanMarket();
+
+await scanMarket("initial");
 await loadCalendar();
-setInterval(scanMarket,5*60*1000);
-setInterval(loadCalendar,5*60*1000);
+
+// Regular market scanning.
+setInterval(()=>{
+if(!isInsideFinalNewsSeconds()){
+scanMarket("scheduled");
+}
+},5*60*1000);
+
+// Update countdown every second.
+setInterval(tickNewsScanner,1000);
+
+// Refresh calendar every minute to catch new events.
+setInterval(loadCalendar,60*1000);
 }
 
 start();
 </script>
+
 </body>
 </html>
