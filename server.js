@@ -36,8 +36,6 @@ app.get("/api/health", (req, res) => {
 });
 
 // PUBLIC MARKET DATA
-// Read-only market information. No trading permissions required.
-
 const marketCache = new Map();
 
 const marketSymbols = new Set([
@@ -61,7 +59,17 @@ async function getCachedJson(url, ttlMs = 10000) {
   });
 
   if (!response.ok) {
-    throw new Error("Market provider HTTP " + response.status);
+    let detail = "";
+
+    try {
+      const body = await response.json();
+      detail = body.message || body.error || "";
+    } catch {}
+
+    throw new Error(
+      `Market provider HTTP ${response.status}` +
+      (detail ? `: ${detail}` : "")
+    );
   }
 
   const data = await response.json();
@@ -74,7 +82,7 @@ async function getCachedJson(url, ttlMs = 10000) {
   return data;
 }
 
-// LIVE PRICE
+// LIVE / LAST KNOWN PRICE
 app.get("/api/market/quote", async (req, res) => {
   try {
     const symbol = String(req.query.symbol || "").toUpperCase();
@@ -85,20 +93,25 @@ app.get("/api/market/quote", async (req, res) => {
       });
     }
 
+    // Allow the provider to return the last known price
+    // when the market is closed.
     const data = await getCachedJson(
-      `https://biquote.io/api/${symbol}?allowStale=false`,
+      `https://biquote.io/api/${symbol}`,
       5000
     );
 
     res.json({
       ...data,
       provider: "biquote.io",
-      retrievedAt: new Date().toISOString()
+      retrievedAt: new Date().toISOString(),
+      priceLabel: data.marketState === "closed" || data.stale
+        ? "LAST KNOWN PRICE — NOT LIVE"
+        : "LIVE PRICE"
     });
 
   } catch (error) {
     res.status(502).json({
-      error: "Live quote unavailable: " + error.message
+      error: "Market quote unavailable: " + error.message
     });
   }
 });
@@ -184,7 +197,7 @@ app.get("/api/calendar", async (req, res) => {
   }
 });
 
-// EXISTING AI SCREENSHOT ANALYSIS
+// AI SCREENSHOT ANALYSIS
 app.post("/api/analyze", upload.single("chart"), async (req, res) => {
   try {
     const apiKey = process.env.GEMINI_API_KEY;
@@ -288,7 +301,6 @@ Never guarantee profits.
 
       } catch (error) {
         lastError = error;
-
         const message = String(error.message || error);
 
         if (
@@ -300,9 +312,7 @@ Never guarantee profits.
 
         const delay = 2000 * Math.pow(2, attempt);
 
-        console.log(
-          `Gemini retry ${attempt + 1} in ${delay}ms`
-        );
+        console.log(`Gemini retry ${attempt + 1} in ${delay}ms`);
 
         await new Promise(resolve =>
           setTimeout(resolve, delay)
