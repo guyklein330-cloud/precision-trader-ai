@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 import multer from "multer";
 import { GoogleGenAI } from "@google/genai";
+import WebSocket from "ws";
 
 const app = express();
 const port = process.env.PORT || 10000;
@@ -198,6 +199,232 @@ app.get("/api/calendar", async (req, res) => {
 });
 
 // AI SCREENSHOT ANALYSIS
+
+
+// DERIV PUBLIC MARKET DATA
+const derivWsUrl = "wss://api.derivws.com/trading/v1/options/ws/public";
+let derivSymbolsCache = { time: 0, symbols: [] };
+
+function derivRequest(payload, expectedType, timeoutMs = 10000) {
+  return new Promise((resolve, reject) => {
+    const ws = new WebSocket(derivWsUrl);
+    const reqId = Math.floor(Date.now() % 1000000000);
+    let settled = false;
+
+    const finish = (error, value) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      try { ws.close(); } catch {}
+      if (error) reject(error);
+      else resolve(value);
+    };
+
+    const timer = setTimeout(() => {
+      finish(new Error("Deriv request timed out."));
+    }, timeoutMs);
+
+    ws.on("open", () => {
+      ws.send(JSON.stringify({ ...payload, req_id: reqId }));
+    });
+
+    ws.on("message", raw => {
+      let data;
+      try {
+        data = JSON.parse(raw.toString());
+      } catch {
+        return;
+      }
+
+      if (data.error) {
+        finish(new Error(data.error.message || "Deriv API error."));
+        return;
+      }
+
+      if (
+        data.req_id === reqId ||
+        data.msg_type === expectedType
+      ) {
+        finish(null, data);
+      }
+    });
+
+    ws.on("error", error => finish(error));
+
+    ws.on("close", () => {
+      if (!settled) {
+        finish(new Error("Deriv connection closed."));
+      }
+    });
+  });
+}
+
+// Discover available synthetic indices from Deriv
+async function getDerivSyntheticSymbols() {
+  if (
+    derivSymbolsCache.symbols.length &&
+    Date.now() - derivSymbolsCache.time < 300000
+  ) {
+    return derivSymbolsCache.symbols;
+  }
+
+  const response = await derivRequest(
+    { active_symbols: "brief" },
+    "active_symbols"
+  );
+
+  const all =
+    response.active_symbols ||
+    response.data?.active_symbols ||
+    [];
+
+  const symbols = all
+    .filter(item =>
+      item.market === "synthetic_index" ||
+      item.market === "synthetic"
+    )
+    .map(item => ({
+      symbol: item.underlying_symbol || item.symbol,
+      name:
+        item.underlying_symbol_name ||
+        item.display_name ||
+        item.symbol,
+      market: item.market,
+      subgroup: item.subgroup,
+      isOpen: item.exchange_is_open !== 0,
+      suspended: item.is_trading_suspended === 1
+    }))
+    .filter(item => item.symbol);
+
+  derivSymbolsCache = {
+    time: Date.now(),
+    symbols
+  };
+
+  return symbols;
+}
+
+// GET AVAILABLE SYNTHETIC INDICES
+app.get("/api/deriv/symbols", async (req, res) => {
+  try {
+    const symbols = await getDerivSyntheticSymbols();
+
+    res.json({
+      success: true,
+      count: symbols.length,
+      symbols,
+      provider: "Deriv",
+      retrievedAt: new Date().toISOString()
+    });
+  } catch (error) {
+    res.status(502).json({
+      error: "Deriv symbols unavailable: " + error.message
+    });
+  }
+});
+
+// GET LIVE SYNTHETIC INDEX PRICE
+app.get("/api/deriv/quote", async (req, res) => {
+  try {
+    const symbol = String(req.query.symbol || "");
+    const symbols = await getDerivSyntheticSymbols();
+
+    if (!symbols.some(item => item.symbol === symbol)) {
+      return res.status(400).json({
+        error: "Unknown Deriv symbol. Check /api/deriv/symbols."
+      });
+    }
+
+    const response = await derivRequest(
+      { ticks: symbol },
+      "tick"
+    );
+
+    const tick = response.tick || response.data?.tick;
+
+    if (!tick || tick.quote === undefined) {
+      throw new Error("No price returned by Deriv.");
+    }
+
+    res.json({
+      symbol,
+      name:
+        symbols.find(item => item.symbol === symbol)?.name ||
+        symbol,
+      price: Number(tick.quote),
+      epoch: tick.epoch,
+      timestamp: tick.epoch
+        ? new Date(tick.epoch * 1000).toISOString()
+        : null,
+      provider: "Deriv",
+      retrievedAt: new Date().toISOString(),
+      live: true
+    });
+  } catch (error) {
+    res.status(502).json({
+      error: "Deriv quote unavailable: " + error.message
+    });
+  }
+});
+
+// GET SYNTHETIC INDEX CANDLES
+app.get("/api/deriv/ohlc", async (req, res) => {
+  try {
+    const symbol = String(req.query.symbol || "");
+    const granularity = Number(req.query.granularity || 900);
+    const count = Math.max(
+      50,
+      Math.min(500, Number(req.query.count) || 200)
+    );
+
+    const allowed = new Set([
+      60, 120, 180, 300, 600, 900,
+      1800, 3600, 7200, 14400, 28800, 86400
+    ]);
+
+    const symbols = await getDerivSyntheticSymbols();
+
+    if (!symbols.some(item => item.symbol === symbol)) {
+      return res.status(400).json({
+        error: "Unknown Deriv symbol. Check /api/deriv/symbols."
+      });
+    }
+
+    if (!allowed.has(granularity)) {
+      return res.status(400).json({
+        error: "Unsupported candle timeframe."
+      });
+    }
+
+    const response = await derivRequest({
+      ticks_history: symbol,
+      count,
+      end: "latest",
+      style: "candles",
+      granularity
+    }, "history", 12000);
+
+    const candles =
+      response.candles ||
+      response.history?.candles ||
+      response.data?.candles ||
+      [];
+
+    res.json({
+      success: true,
+      symbol,
+      intervalSeconds: granularity,
+      candles,
+      count: candles.length,
+      provider: "Deriv",
+      retrievedAt: new Date().toISOString()
+    });
+  } catch (error) {
+    res.status(502).json({
+      error: "Deriv candles unavailable: " + error.message
+    });
+  }
+});
 app.post("/api/analyze", upload.single("chart"), async (req, res) => {
   try {
     const apiKey = process.env.GEMINI_API_KEY;
